@@ -52,12 +52,12 @@ function Contacto({ abierto, cerrar }) {
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={handleCerrar} style={styles.cerrar}>✕</button>
-        <h2 style={styles.titulo}>📞 Contáctanos</h2>
+        <h2 style={styles.titulo}>Contáctanos</h2>
 
         <div style={styles.infoFija}>
-          <p style={styles.infoItem}>📍 Ciudad de Panamá, Panamá</p>
-          <p style={styles.infoItem}>📧 todooffice@gmail.com</p>
-          <p style={styles.infoItem}>📱 +507 6123-7890</p>
+          <p style={styles.infoItem}>Ubicación📍: Ciudad de Panamá, Panamá</p>
+          <p style={styles.infoItem}>Correo:📧 todooffice@gmail.com</p>
+          <p style={styles.infoItem}>Teléfono:📱 +507 6123-7890</p>
         </div>
 
         <hr style={styles.linea} />
@@ -126,7 +126,7 @@ const styles = {
   cerrar: { position: 'absolute', top: '12px', right: '12px', background: 'none',
     border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666' },
   titulo: { textAlign: 'center', color: '#762d78', marginTop: 0, marginBottom: '20px' },
-  infoFija: { backgroundColor: '#f9fafb', padding: '16px', borderRadius: '8px' },
+  infoFija: { backgroundColor: '#f9ebff', padding: '16px', borderRadius: '8px' },
   infoItem: { margin: '8px 0', fontSize: '14px', color: '#333' },
   linea: { border: 'none', borderTop: '1px solid #eee', margin: '20px 0' },
   formTitulo: { fontSize: '15px', marginBottom: '12px', color: '#333' },
