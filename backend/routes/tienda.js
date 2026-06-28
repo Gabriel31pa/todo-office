@@ -108,7 +108,7 @@ router.post('/compra', async (req, res) => {
     res.json({
       mensaje: 'Compra registrada correctamente',
       venta_id,
-      pdfUrl: `http://localhost:5000/facturas/factura_${venta_id}.pdf`,
+      pdfUrl: `${process.env.BACKEND_URL || 'http://localhost:5000'}/facturas/factura_${venta_id}.pdf`,
     });
   } catch (error) {
     console.log('ERROR:', error.message);
