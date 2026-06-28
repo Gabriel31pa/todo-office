@@ -37,7 +37,7 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
       total,
     });
     setMensaje('¡Compra realizada con éxito!');
-    setPdfUrl(res.data.pdfUrl);
+    setPdfUrl(`data:application/pdf;base64,${res.data.pdfBase64}`);
     vaciarCarrito();
     recargarProductos();
     setNombre('');
@@ -193,9 +193,13 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
                 </button>
             ) : (
               <div>
-                <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn-hover" style={styles.botonDescarga}>
-                  📄 Descargar Factura PDF
-                </a>
+                <a href={pdfUrl}
+                      download={`factura.pdf`}
+                      className="btn-hover"
+                      style={styles.botonDescarga}
+                    >
+                      📄 Descargar Factura PDF
+                    </a>
                 <button onClick={() => { setMostrarPago(false); setPdfUrl(''); }} style={styles.botonCerrarModal}>
                   Cerrar
                 </button>
