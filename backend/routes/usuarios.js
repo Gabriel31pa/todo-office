@@ -23,7 +23,7 @@ router.post('/', auth, async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
       'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, rol',
-      [nombre, email, hash, rol || 'usuario']
+      [nombre, email, hash, rol || 'admin']
     );
     res.json(result.rows[0]);
   } catch (error) {
@@ -32,19 +32,18 @@ router.post('/', auth, async (req, res) => {
 });
 
 // PUT - Editar usuario
-// PUT - Editar usuario
 router.put('/:id', auth, async (req, res) => {
   const { nombre, email, rol, password } = req.body;
   try {
     if (password) {
       const hash = await bcrypt.hash(password, 10);
       await pool.query(
-        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, password=$4 WHERE id=$5 RETURNING id, nombre, email, rol',
+        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, password=$4 WHERE id=$5',
         [nombre, email, rol, hash, req.params.id]
       );
     } else {
       await pool.query(
-        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3 WHERE id=$4 RETURNING id, nombre, email, rol',
+        'UPDATE usuarios SET nombre=$1, email=$2, rol=$3 WHERE id=$4',
         [nombre, email, rol, req.params.id]
       );
     }

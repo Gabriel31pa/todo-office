@@ -31,6 +31,9 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/registro (crear primer admin)
 router.post('/registro', async (req, res) => {
   const { nombre, email, password, rol } = req.body;
+  if (!nombre || !nombre.trim() || !email || !email.trim() || !password) {
+    return res.status(400).json({ mensaje: 'Nombre, email y contraseña requeridos' });
+  }
   try {
     const hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
