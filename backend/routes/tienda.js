@@ -14,10 +14,9 @@ router.get('/productos', async (req, res) => {
       ORDER BY p.nombre ASC
     `);
     res.json(result.rows);
- } catch (error) {
-  console.log('ERROR REAL:', error.message);
-  res.status(500).json({ mensaje: error.message });
-}
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener productos' });
+  }
 });
 
 // POST - Registrar compra desde la tienda
