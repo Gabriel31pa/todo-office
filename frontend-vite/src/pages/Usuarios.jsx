@@ -18,7 +18,7 @@ function Usuarios() {
 
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/usuarios', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/usuarios`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsuarios(res.data);
@@ -56,11 +56,10 @@ function Usuarios() {
     e.preventDefault();
     try {
       if (editando) {
-        await axios.put(`http://localhost:5000/api/usuarios/${editando}`, form, {
-          headers: { Authorization: `Bearer ${token}` },
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/usuarios/${editando}`, form, {
         });
       } else {
-        await axios.post('http://localhost:5000/api/usuarios', form, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/usuarios`, form, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -74,7 +73,7 @@ function Usuarios() {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar este usuario?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/usuarios/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/usuarios/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       cargarUsuarios();

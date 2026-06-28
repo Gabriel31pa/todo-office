@@ -21,7 +21,7 @@ function Productos() {
 
   const cargarProductos = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/productos', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/productos`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProductos(res.data);
@@ -55,7 +55,7 @@ function Productos() {
       descripcion: producto.descripcion,
       cantidad: producto.cantidad,
     });
-    setPreview(producto.imagen ? `http://localhost:5000${producto.imagen}` : null);
+    setPreview(producto.imagen ? `${import.meta.env.VITE_API_URL}${producto.imagen}` : null);
     setImagen(null);
     setMostrarForm(true);
   };
@@ -80,11 +80,11 @@ function Productos() {
       if (imagen) formData.append('imagen', imagen);
 
       if (editando) {
-        await axios.put(`http://localhost:5000/api/productos/${editando}`, formData, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/productos/${editando}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post('http://localhost:5000/api/productos', formData, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/productos`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -98,7 +98,7 @@ function Productos() {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar este producto?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/productos/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/productos/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       cargarProductos();
@@ -194,7 +194,7 @@ function Productos() {
               <tr key={p.id} style={styles.fila}>
                 <td style={styles.td}>
                   {p.imagen ? (
-                    <img src={`http://localhost:5000${p.imagen}`} alt={p.nombre}
+                    <img src={`${import.meta.env.VITE_API_URL}${p.imagen}`} alt={p.nombre}
                       style={styles.imagenTabla} />
                   ) : (
                     <span style={styles.sinImagen}>📦</span>

@@ -11,7 +11,7 @@ function Reportes() {
 
   const cargarInventario = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/productos', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/productos`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventario(res.data);
@@ -27,7 +27,7 @@ function Reportes() {
 
   const cargarVentas = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/ventas', {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/ventas`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setVentasPorFecha(res.data);

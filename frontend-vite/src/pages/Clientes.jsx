@@ -12,7 +12,7 @@ function Clientes() {
 
   const cargarClientes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/clientes', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClientes(res.data);
@@ -41,7 +41,7 @@ function Clientes() {
       return;
     }
     try {
-      await axios.put(`http://localhost:5000/api/clientes/${id}`,
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/clientes/${id}`,
         { nombre: nombreEditado },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -56,7 +56,7 @@ function Clientes() {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar este cliente?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/clientes/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/clientes/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       cargarClientes();

@@ -12,7 +12,7 @@ function Ventas() {
 
   const cargarVentas = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/ventas', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/ventas`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVentas(res.data);
@@ -28,7 +28,7 @@ function Ventas() {
   const verDetalle = async (venta) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/ventas/${venta.id}/detalle`,
+  `${import.meta.env.VITE_API_URL}/api/ventas/${venta.id}/detalle`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDetalleVenta(res.data);
@@ -41,7 +41,7 @@ function Ventas() {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta venta?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/ventas/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/ventas/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (ventaSeleccionada?.id === id) {

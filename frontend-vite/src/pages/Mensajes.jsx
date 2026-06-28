@@ -10,7 +10,7 @@ function Mensajes() {
 
   const cargarMensajes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/contacto', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/contacto`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMensajes(res.data);
@@ -26,7 +26,7 @@ function Mensajes() {
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Eliminar este mensaje?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/contacto/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/contacto/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       cargarMensajes();
