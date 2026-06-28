@@ -11,6 +11,12 @@ const coloresCategorias = {
   'Oficina': { fondo: '#fef3c7', texto: '#b45309' },
 };
 
+function obtenerUrlImagen(imagen) {
+  if (!imagen) return null;
+  if (imagen.startsWith('http')) return imagen;
+  return `${import.meta.env.VITE_API_URL}${imagen}`;
+}
+
 function Tienda() {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -214,9 +220,9 @@ function Tienda() {
                     <div style={styles.imagenContainer}>
                         {p.imagen ? (
                             <img
-                            src={`${import.meta.env.VITE_API_URL}${p.imagen}`}
-                            alt={p.nombre}
-                            style={styles.imagen}
+                              src={obtenerUrlImagen(p.imagen)}
+                              alt={p.nombre}
+                              style={styles.imagen}
                             />
                         ) : (
                             <span style={styles.imagenPlaceholder}>📦</span>

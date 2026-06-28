@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+function obtenerUrlImagen(imagen) {
+  if (!imagen) return null;
+  if (imagen.startsWith('http')) return imagen;
+  return `${import.meta.env.VITE_API_URL}${imagen}`;
+}
+
 function Productos() {
   const [productos, setProductos] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
@@ -55,7 +61,7 @@ function Productos() {
       descripcion: producto.descripcion,
       cantidad: producto.cantidad,
     });
-    setPreview(producto.imagen ? `${import.meta.env.VITE_API_URL}${producto.imagen}` : null);
+    setPreview(producto.imagen ? obtenerUrlImagen(producto.imagen) : null);
     setImagen(null);
     setMostrarForm(true);
   };
@@ -194,7 +200,7 @@ function Productos() {
               <tr key={p.id} style={styles.fila}>
                 <td style={styles.td}>
                   {p.imagen ? (
-                    <img src={`${import.meta.env.VITE_API_URL}${p.imagen}`} alt={p.nombre}
+                    <img src={obtenerUrlImagen(p.imagen)} alt={p.nombre}
                       style={styles.imagenTabla} />
                   ) : (
                     <span style={styles.sinImagen}>📦</span>
