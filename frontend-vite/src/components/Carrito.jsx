@@ -25,10 +25,11 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
   }
   try {
     const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tienda/compra`, {
-      correo,
-      metodoPago,
-      numeroCuenta,
-      items: carrito.map((item) => ({
+  nombre,
+  correo,
+  metodoPago,
+  numeroCuenta,
+  items: carrito.map((item) => ({
         producto_id: item.id,
         cantidad: item.cantidad,
         precio_unitario: item.precio,
