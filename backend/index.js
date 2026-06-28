@@ -20,7 +20,6 @@ app.use('/uploads', express.static('uploads'));
 // Rutas
 app.use('/api/tienda', require('./routes/tienda'));
 app.use('/api/auth', require('./routes/auth'));
-app.use('/facturas', require('express').static('facturas'));
 app.use('/api/productos', require('./routes/productos'));
 app.use('/api/clientes', require('./routes/clientes'));
 app.use('/api/ventas', require('./routes/ventas'));
