@@ -28,7 +28,7 @@ function Ventas() {
   const verDetalle = async (venta) => {
     try {
       const res = await axios.get(
-  `${import.meta.env.VITE_API_URL}/api/ventas/${venta.id}/detalle`,
+        `${import.meta.env.VITE_API_URL}/api/ventas/${venta.id}/detalle`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDetalleVenta(res.data);
@@ -38,6 +38,11 @@ function Ventas() {
     }
   };
 
+  const cerrarDetalle = () => {
+    setDetalleVenta(null);
+    setVentaSeleccionada(null);
+  };
+
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta venta?')) return;
     try {
@@ -45,8 +50,7 @@ function Ventas() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (ventaSeleccionada?.id === id) {
-        setDetalleVenta(null);
-        setVentaSeleccionada(null);
+        cerrarDetalle();
       }
       cargarVentas();
     } catch (err) {
@@ -65,59 +69,50 @@ function Ventas() {
 
       {error && <p style={styles.error}>{error}</p>}
 
-      <div style={styles.contenido}>
-        {/* Tabla de ventas */}
-        <div style={styles.tablaContainer}>
-          <table style={styles.tabla}>
-            <thead>
-              <tr style={styles.thead}>
-                <th style={styles.th}>#</th>
-                <th style={styles.th}>Cliente</th>
-                <th style={styles.th}>Total</th>
-                <th style={styles.th}>Fecha</th>
-                <th style={styles.th}>Acciones</th>
+      <table style={styles.tabla}>
+        <thead>
+          <tr style={styles.thead}>
+            <th style={styles.th}>#</th>
+            <th style={styles.th}>Cliente</th>
+            <th style={styles.th}>Total</th>
+            <th style={styles.th}>Fecha</th>
+            <th style={styles.th}>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ventas.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={styles.vacio}>No hay ventas registradas</td>
+            </tr>
+          ) : (
+            ventas.map((v) => (
+              <tr key={v.id} style={styles.fila}>
+                <td style={styles.td}>{v.id}</td>
+                <td style={styles.td}>{v.cliente_nombre}</td>
+                <td style={styles.td}>${parseFloat(v.total).toFixed(2)}</td>
+                <td style={styles.td}>{new Date(v.fecha).toLocaleDateString()}</td>
+                <td style={styles.td}>
+                  <button style={styles.botonDetalle} className="btn-hover" onClick={() => verDetalle(v)}>
+                    Ver detalle
+                  </button>
+                  <button style={styles.botonEliminar} className="btn-hover" onClick={() => handleEliminar(v.id)}>
+                    Eliminar
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {ventas.length === 0 ? (
-                <tr>
-                  <td colSpan="5" style={styles.vacio}>No hay ventas registradas</td>
-                </tr>
-              ) : (
-                ventas.map((v) => (
-                  <tr key={v.id} style={{
-                    ...styles.fila,
-                    backgroundColor: ventaSeleccionada?.id === v.id ? '#f3e8ff' : 'white',
-                  }}>
-                    <td style={styles.td}>{v.id}</td>
-                    <td style={styles.td}>{v.cliente_nombre}</td>
-                    <td style={styles.td}>${parseFloat(v.total).toFixed(2)}</td>
-                    <td style={styles.td}>{new Date(v.fecha).toLocaleDateString()}</td>
-                    <td style={styles.td}>
-                      <button style={styles.botonDetalle} className="btn-hover" onClick={() => verDetalle(v)}>
-                        Ver detalle
-                      </button>
-                      <button style={styles.botonEliminar} className="btn-hover" onClick={() => handleEliminar(v.id)}>
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))
+          )}
+        </tbody>
+      </table>
 
-        {/* Panel de detalle */}
-        {detalleVenta && ventaSeleccionada && (
-          <div style={styles.detalle}>
-            <div style={styles.detalleTitulo}>
-              <h3 style={{ margin: 0 }}>
-                Detalle de Venta #{ventaSeleccionada.id}
-              </h3>
-              <button onClick={() => { setDetalleVenta(null); setVentaSeleccionada(null); }}
-                style={styles.cerrar}>✕</button>
-            </div>
+      {/* Modal de detalle */}
+      {detalleVenta && ventaSeleccionada && (
+        <div style={styles.overlay} onClick={cerrarDetalle}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button onClick={cerrarDetalle} style={styles.cerrarModal}>✕</button>
+            <h3 style={styles.modalTitulo}>
+              Detalle de Venta #{ventaSeleccionada.id}
+            </h3>
             <p style={styles.detalleCliente}>
               Cliente: <strong>{ventaSeleccionada.cliente_nombre}</strong>
             </p>
@@ -148,8 +143,8 @@ function Ventas() {
               Total: ${parseFloat(ventaSeleccionada.total).toFixed(2)}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -162,8 +157,6 @@ const styles = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '24px' },
   botonVolver: { padding: '8px 16px', backgroundColor: '#383838', color: 'white',
     border: 'none', borderRadius: '6px', cursor: 'pointer' },
-  contenido: { display: 'flex', gap: '24px', alignItems: 'flex-start' },
-  tablaContainer: { flex: 1 },
   tabla: { width: '100%', borderCollapse: 'collapse', backgroundColor: 'white',
     borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
   tablaDetalle: { width: '100%', borderCollapse: 'collapse', marginTop: '12px' },
@@ -176,12 +169,15 @@ const styles = {
     border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px' },
   botonEliminar: { padding: '6px 12px', backgroundColor: '#ef4444', color: 'white',
     border: 'none', borderRadius: '6px', cursor: 'pointer' },
-  detalle: { width: '350px', backgroundColor: 'white', padding: '20px',
-    borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flexShrink: 0 },
-  detalleTitulo: { display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    marginBottom: '12px' },
-  cerrar: { background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer',
-    color: '#666' },
+  overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', zIndex: 1000, padding: '20px' },
+  modal: { backgroundColor: 'white', padding: '32px', borderRadius: '10px',
+    width: '450px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto',
+    position: 'relative', boxSizing: 'border-box' },
+  cerrarModal: { position: 'absolute', top: '12px', right: '12px', background: 'none',
+    border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666' },
+  modalTitulo: { marginTop: 0, color: '#762d78' },
   detalleCliente: { margin: '4px 0', fontSize: '14px', color: '#555' },
   detalleTotal: { marginTop: '16px', textAlign: 'right', fontWeight: 'bold',
     fontSize: '16px', color: '#9701df' },
