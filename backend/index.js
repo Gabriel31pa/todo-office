@@ -10,6 +10,15 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://192.168.1.XX:5173',
+    'https://todo-office-lac.vercel.app'
+  ],
+  credentials: true,
+}));
 app.use('/uploads', express.static('uploads'));
 
 // Rutas (las irás agregando)
