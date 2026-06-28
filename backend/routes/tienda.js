@@ -87,19 +87,20 @@ router.post('/compra', async (req, res) => {
       });
     }
 
-    // Generar PDF de la factura
+    // Generar PDF de la factura (ahora como buffer en memoria)
     const ventaCompleta = {
       id: venta_id,
       cliente_nombre: nombre,
       fecha: venta.rows[0].fecha,
       total,
     };
-    const rutaPDF = generarPDF(ventaCompleta, detallesParaPDF);
+    const pdfBuffer = await generarPDF(ventaCompleta, detallesParaPDF);
+    const pdfBase64 = pdfBuffer.toString('base64');
 
     // Enviar correo si el cliente dio su email
     if (correo) {
       try {
-        await enviarCorreo(correo, rutaPDF, venta_id);
+        await enviarCorreo(correo, pdfBuffer, venta_id);
       } catch (errorCorreo) {
         console.log('Error al enviar correo:', errorCorreo.message);
       }
@@ -108,7 +109,7 @@ router.post('/compra', async (req, res) => {
     res.json({
       mensaje: 'Compra registrada correctamente',
       venta_id,
-      pdfUrl: `${process.env.BACKEND_URL || 'http://localhost:5000'}/facturas/factura_${venta_id}.pdf`,
+      pdfBase64,
     });
   } catch (error) {
     console.log('ERROR:', error.message);

@@ -1,13 +1,10 @@
 const { Resend } = require('resend');
-const fs = require('fs');
 require('dotenv').config();
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function enviarCorreo(correoCliente, rutaPDF, ventaId) {
+async function enviarCorreo(correoCliente, pdfBuffer, ventaId) {
   try {
-    const pdfBuffer = fs.readFileSync(rutaPDF);
-
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: correoCliente,
