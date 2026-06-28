@@ -8,7 +8,6 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const esProduccion = process.env.DB_HOST !== 'localhost';
-console.log('DB_HOST:', process.env.DB_HOST, '| esProduccion:', esProduccion);
 
 // Configurar Cloudinary solo si estamos en producción
 if (esProduccion) {
