@@ -118,8 +118,8 @@ function Productos() {
       <div style={styles.header}>
         <h2>📦 Productos</h2>
         <div style={styles.headerBotones}>
-          <button onClick={() => setMostrarForm(!mostrarForm)} className="btn-hover" style={styles.botonAgregar}>
-            {mostrarForm ? 'Cancelar' : '+ Agregar Producto'}
+          <button onClick={() => setMostrarForm(true)} className="btn-hover" style={styles.botonAgregar}>
+            + Agregar Producto
           </button>
           <button onClick={() => navigate('/dashboard')} className="btn-hover" style={styles.botonVolver}>
             ← Volver
@@ -129,54 +129,59 @@ function Productos() {
 
       {error && <p style={styles.error}>{error}</p>}
 
+      {/* Modal del formulario */}
       {mostrarForm && (
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <h3>{editando ? 'Editar Producto' : 'Nuevo Producto'}</h3>
-          <div style={styles.grid}>
-            <div style={styles.campo}>
-              <label>Nombre</label>
-              <input name="nombre" value={form.nombre} onChange={handleChange}
-                style={styles.input} required />
-            </div>
-            <div style={styles.campo}>
-              <label>Categoría</label>
-              <input name="categoria" value={form.categoria} onChange={handleChange}
-                style={styles.input} />
-            </div>
-            <div style={styles.campo}>
-              <label>Precio</label>
-              <input name="precio" type="number" value={form.precio} onChange={handleChange}
-                style={styles.input} required />
-            </div>
-            <div style={styles.campo}>
-              <label>Stock</label>
-              <input name="cantidad" type="number" value={form.cantidad} onChange={handleChange}
-                style={styles.input} required />
-            </div>
-            <div style={styles.campo}>
-              <label>Descripción</label>
-              <input name="descripcion" value={form.descripcion} onChange={handleChange}
-                style={styles.input} />
-            </div>
-            <div style={styles.campo}>
-              <label>Imagen del producto</label>
-              <input type="file" accept="image/*" onChange={handleImagen}
-                style={styles.input} />
-              {preview && (
-                <img src={preview} alt="preview"
-                  style={styles.preview} />
-              )}
-            </div>
+        <div style={styles.overlay} onClick={handleCancelar}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button onClick={handleCancelar} style={styles.cerrarModal}>✕</button>
+            <h3 style={styles.modalTitulo}>{editando ? 'Editar Producto' : 'Nuevo Producto'}</h3>
+            <form onSubmit={handleSubmit}>
+              <div style={styles.grid}>
+                <div style={styles.campo}>
+                  <label>Nombre</label>
+                  <input name="nombre" value={form.nombre} onChange={handleChange}
+                    style={styles.input} required />
+                </div>
+                <div style={styles.campo}>
+                  <label>Categoría</label>
+                  <input name="categoria" value={form.categoria} onChange={handleChange}
+                    style={styles.input} />
+                </div>
+                <div style={styles.campo}>
+                  <label>Precio</label>
+                  <input name="precio" type="number" value={form.precio} onChange={handleChange}
+                    style={styles.input} required />
+                </div>
+                <div style={styles.campo}>
+                  <label>Stock</label>
+                  <input name="cantidad" type="number" value={form.cantidad} onChange={handleChange}
+                    style={styles.input} required />
+                </div>
+                <div style={styles.campo}>
+                  <label>Descripción</label>
+                  <input name="descripcion" value={form.descripcion} onChange={handleChange}
+                    style={styles.input} />
+                </div>
+                <div style={styles.campo}>
+                  <label>Imagen del producto</label>
+                  <input type="file" accept="image/*" onChange={handleImagen}
+                    style={styles.input} />
+                  {preview && (
+                    <img src={preview} alt="preview" style={styles.preview} />
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                <button type="submit" className="btn-hover" style={styles.botonGuardar}>
+                  {editando ? 'Actualizar Producto' : 'Guardar Producto'}
+                </button>
+                <button type="button" onClick={handleCancelar} className="btn-hover" style={styles.botonCancelar}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button type="submit" className="btn-hover" style={styles.botonGuardar}>
-              {editando ? 'Actualizar Producto' : 'Guardar Producto'}
-            </button>
-            <button type="button" onClick={handleCancelar} className="btn-hover" style={styles.botonCancelar}>
-              Cancelar
-            </button>
-          </div>
-        </form>
+        </div>
       )}
 
       <table style={styles.tabla}>
@@ -252,8 +257,15 @@ const styles = {
     border: 'none', borderRadius: '6px', cursor: 'pointer', marginRight: '8px' },
   botonEliminar: { padding: '6px 12px', backgroundColor: '#ef4444', color: 'white',
     border: 'none', borderRadius: '6px', cursor: 'pointer' },
-  form: { backgroundColor: 'white', padding: '24px', borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '24px' },
+  overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', zIndex: 1000, padding: '20px' },
+  modal: { backgroundColor: 'white', padding: '32px', borderRadius: '10px',
+    width: '600px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto',
+    position: 'relative', boxSizing: 'border-box' },
+  cerrarModal: { position: 'absolute', top: '12px', right: '12px', background: 'none',
+    border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666' },
+  modalTitulo: { marginTop: 0, color: '#762d78' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
     gap: '16px' },
   campo: { display: 'flex', flexDirection: 'column', gap: '6px' },
