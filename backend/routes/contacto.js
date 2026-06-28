@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db/conexion');
 const auth = require('../middleware/auth');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // POST - Enviar mensaje de contacto (público, sin autenticación)
 router.post('/', async (req, res) => {
@@ -15,24 +17,13 @@ router.post('/', async (req, res) => {
     );
 
     // Enviar notificación a tu correo
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      family: 4,
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
-      subject: `Nuevo mensaje de contacto - ${nombre}`,
-      text: `Nombre: ${nombre}\nCorreo: ${correo}\n\nMensaje:\n${mensaje}`,
-    });
+    // Enviar notificación a tu correo
+await resend.emails.send({
+  from: 'onboarding@resend.dev',
+  to: process.env.EMAIL_USER,
+  subject: `Nuevo mensaje de contacto - ${nombre}`,
+  text: `Nombre: ${nombre}\nCorreo: ${correo}\n\nMensaje:\n${mensaje}`,
+});
 
     res.json({ mensaje: 'Mensaje enviado correctamente' });
   } catch (error) {
