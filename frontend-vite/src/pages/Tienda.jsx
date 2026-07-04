@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Carrito from '../components/Carrito';
+import BienvenidaModal from '../components/BienvenidaModal';
 import { useNavigate } from 'react-router-dom';
 import Contacto from '../components/Contacto';
 import Footer from '../components/Footer';
@@ -22,6 +23,7 @@ function Tienda() {
   const [categorias, setCategorias] = useState([]);
   const [orden, setOrden] = useState('default');
   const [categoriaActiva, setCategoriaActiva] = useState('Todo');
+  const [bienvenidaAbierta, setBienvenidaAbierta] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [carrito, setCarrito] = useState([]);
   const [carritoPulso, setCarritoPulso] = useState(false);
@@ -285,9 +287,14 @@ function Tienda() {
       abierto={contactoAbierto}
       cerrar={() => setContactoAbierto(false)}
     />
-    <Footer />
+    <BienvenidaModal
+  abierto={bienvenidaAbierta}
+  cerrar={() => setBienvenidaAbierta(false)}
+/>
+    <Footer onVerBienvenida={() => setBienvenidaAbierta(true)} />
   </div>
 </>
+
 );
 }
 

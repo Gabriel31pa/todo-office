@@ -1,4 +1,4 @@
-function Footer() {
+function Footer({ onVerBienvenida }) {
   const anioActual = new Date().getFullYear();
 
   return (
@@ -38,6 +38,15 @@ function Footer() {
 
       <div style={styles.linea} />
 
+
+    {onVerBienvenida && (
+        <p style={styles.enlaceBienvenida}>
+          <button onClick={onVerBienvenida} style={styles.botonBienvenida}>
+            ¿Quiénes somos?
+          </button>
+        </p>
+      )}
+
       <p style={styles.copyright}>
         © {anioActual} TODO OFFICE. Todos los derechos reservados.
       </p>
@@ -51,6 +60,9 @@ const styles = {
   contenido: { display: 'flex', flexWrap: 'wrap', gap: '40px', maxWidth: '900px',
     margin: '0 auto', justifyContent: 'space-between' },
   columna: { minWidth: '220px' },
+  enlaceBienvenida: { textAlign: 'center', margin: '0 0 8px' },
+botonBienvenida: { background: 'none', border: 'none', color: '#c084fc',
+  cursor: 'pointer', fontSize: '12px', textDecoration: 'underline' },
   logo: { margin: '0 0 8px', fontSize: '18px', color: '#c084fc', letterSpacing: '0.5px' },
   descripcion: { margin: 0, fontSize: '13px', color: '#999' },
   titulo: { margin: '0 0 14px', fontSize: '13px', color: '#fff', letterSpacing: '0.5px',
