@@ -1,58 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, abierto, cerrarCarrito }) {
   const [mostrarPago, setMostrarPago] = useState(false);
   const [nombre, setNombre] = useState('');
+  const [correo, setCorreo] = useState('');
   const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [numeroCuenta, setNumeroCuenta] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const [correo, setCorreo] = useState('');
   const [pdfUrl, setPdfUrl] = useState('');
+
+  useEffect(() => {
+    if (mostrarPago) {
+      setMensaje('');
+      setPdfUrl('');
+    }
+  }, [mostrarPago]);
 
   const subtotal = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   const itbms = subtotal * 0.07;
   const total = subtotal + itbms;
 
   const confirmarPago = async () => {
-  if (!nombre) {
-    setMensaje('Por favor ingresa tu nombre');
-    return;
-  }
-  if (carrito.length === 0) {
-    setMensaje('El carrito está vacío');
-    return;
-  }
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tienda/compra`, {
-  nombre,
-  correo,
-  metodoPago,
-  numeroCuenta,
-  items: carrito.map((item) => ({
-        producto_id: item.id,
-        cantidad: item.cantidad,
-        precio_unitario: item.precio,
-      })),
-      total,
-    });
-    setMensaje('¡Compra realizada con éxito!');
-    setPdfUrl(`data:application/pdf;base64,${res.data.pdfBase64}`);
-    vaciarCarrito();
-    recargarProductos();
-    setNombre('');
-    setCorreo('');
-    setNumeroCuenta('');
-  } catch (err) {
-    setMensaje('Error al procesar el pago');
-  }
-};
+    if (!nombre) {
+      setMensaje('Por favor ingresa tu nombre');
+      return;
+    }
+    if (carrito.length === 0) {
+      setMensaje('El carrito está vacío');
+      return;
+    }
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tienda/compra`, {
+        nombre,
+        correo,
+        metodoPago,
+        numeroCuenta,
+        items: carrito.map((item) => ({
+          producto_id: item.id,
+          cantidad: item.cantidad,
+          precio_unitario: item.precio,
+        })),
+        total,
+      });
+      setMensaje('¡Compra realizada con éxito!');
+      setPdfUrl(`data:application/pdf;base64,${res.data.pdfBase64}`);
+      vaciarCarrito();
+      recargarProductos();
+      setMostrarPago(false);
+      setNombre('');
+      setCorreo('');
+      setNumeroCuenta('');
+      setTimeout(() => setMensaje(''), 3000);
+    } catch (err) {
+      setMensaje('Error al procesar el pago');
+    }
+  };
+
   return (
     <>
-      {/* Fondo oscuro al abrir el carrito */}
       {abierto && <div style={styles.overlay} onClick={cerrarCarrito} />}
 
-      {/* Panel deslizante */}
       <div style={{
         ...styles.panel,
         transform: abierto ? 'translateX(0)' : 'translateX(100%)',
@@ -111,17 +119,16 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
               </div>
             </div>
 
-            <button onClick={() => setMostrarPago(true)} className="btn-hover" style={styles.botonPagar}>
-                PROCEDER AL PAGO
-              </button>
-            <button onClick={vaciarCarrito} className="btn-hover" style={styles.botonVaciar}>
+            <button onClick={() => setMostrarPago(true)} style={styles.botonPagar}>
+              PROCEDER AL PAGO
+            </button>
+            <button onClick={vaciarCarrito} style={styles.botonVaciar}>
               Vaciar Carrito
             </button>
           </>
         )}
       </div>
 
-      {/* Modal de pago */}
       {mostrarPago && (
         <div style={styles.modalOverlay}>
           <div style={styles.modal}>
@@ -145,7 +152,7 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
             </div>
 
             <div style={styles.campo}>
-              <label>Correo:</label>
+              <label>Correo (opcional, para recibir tu factura):</label>
               <input
                 type="email"
                 value={correo}
@@ -172,34 +179,30 @@ function Carrito({ carrito, vaciarCarrito, quitarDelCarrito, recargarProductos, 
               <div style={styles.campo}>
                 <label>Número de Cuenta (solo Tarjeta/Transf.):</label>
                 <input
-                    type="text"
-                    value={numeroCuenta}
-                    onChange={(e) => {
-                      const soloNumeros = e.target.value.replace(/\D/g, '');
-                      setNumeroCuenta(soloNumeros);
-                    }}
-                    style={styles.input}
-                    placeholder="N/A"
-                    inputMode="numeric"
-                  />
+                  type="text"
+                  value={numeroCuenta}
+                  onChange={(e) => {
+                    const soloNumeros = e.target.value.replace(/\D/g, '');
+                    setNumeroCuenta(soloNumeros);
+                  }}
+                  style={styles.input}
+                  placeholder="N/A"
+                  inputMode="numeric"
+                />
               </div>
             )}
 
             {mensaje && <p style={styles.mensajeError}>{mensaje}</p>}
 
             {!pdfUrl ? (
-              <button onClick={confirmarPago} className="btn-hover" style={styles.botonConfirmar}>
-                  Confirmar Pago y Finalizar
-                </button>
+              <button onClick={confirmarPago} style={styles.botonConfirmar}>
+                Confirmar Pago y Finalizar
+              </button>
             ) : (
               <div>
-                <a href={pdfUrl}
-                      download={`factura.pdf`}
-                      className="btn-hover"
-                      style={styles.botonDescarga}
-                    >
-                      📄 Descargar Factura PDF
-                    </a>
+                <a href={pdfUrl} download="factura.pdf" className="btn-hover" style={styles.botonDescarga}>
+                  📄 Descargar Factura PDF
+                </a>
                 <button onClick={() => { setMostrarPago(false); setPdfUrl(''); }} style={styles.botonCerrarModal}>
                   Cerrar
                 </button>
@@ -229,52 +232,50 @@ const styles = {
     marginBottom: '12px', borderBottom: '1px solid #3a3343', paddingBottom: '12px',
   },
   cerrarPanel: {
-    background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#9701df',
+    background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer',
+    color: '#9701df',
   },
-  botonDescarga: { display: 'block', width: '100%', padding: '12px', backgroundColor: '#16a34a',
-  color: 'white', textAlign: 'center', textDecoration: 'none', borderRadius: '6px',
-  fontWeight: 'bold', marginTop: '8px', boxSizing: 'border-box' },
-  botonCerrarModal: { width: '100%', padding: '10px', backgroundColor: '#6b7280', color: 'white',
-  border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '8px' },
   titulo: { fontSize: '15px', fontWeight: 'bold', margin: 0 },
   vacio: { fontSize: '13px', color: '#999', textAlign: 'center', marginTop: '40px' },
   tabla: { width: '100%', borderCollapse: 'collapse', fontSize: '13px' },
   th: { textAlign: 'left', padding: '6px 4px', borderBottom: '1px solid #eee', color: '#666' },
   fila: { borderBottom: '1px solid #f5f5f5' },
   td: { padding: '6px 4px', fontSize: '13px' },
+  botonQuitarItem: { background: 'none', border: 'none', color: '#ef4444',
+    cursor: 'pointer', fontSize: '14px', padding: '2px 6px' },
   totalContainer: { marginTop: '16px' },
   totalFila: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px',
     fontSize: '13px' },
   totalLabel: { fontSize: '13px', color: '#666' },
   totalMonto: { fontSize: '17px', fontWeight: 'bold', color: '#9701df' },
-  botonQuitarItem: { background: 'none', border: 'none', color: '#ef4444',
-  cursor: 'pointer', fontSize: '14px', padding: '2px 6px' },
   botonPagar: { width: '100%', padding: '12px', backgroundColor: '#9701df', color: 'white',
-  border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '16px',
-  fontWeight: 'bold', fontSize: '14px' },
-  botonVaciar: { width: '100%', padding: '10px', backgroundColor: '#dac1da', color: '#9701df',
+    border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '16px',
+    fontWeight: 'bold', fontSize: '14px' },
+  botonVaciar: { width: '100%', padding: '10px', backgroundColor: '#f3f4f6', color: '#666',
     border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '8px',
     fontSize: '13px' },
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center',
-  justifyContent: 'center', zIndex: 1000 },
+    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', zIndex: 1000 },
   modal: { backgroundColor: 'white', padding: '32px', borderRadius: '10px',
-  width: '380px', maxWidth: '90vw', position: 'relative', boxSizing: 'border-box' },
+    width: '380px', maxWidth: '90vw', position: 'relative', boxSizing: 'border-box' },
   cerrar: { position: 'absolute', top: '12px', right: '12px', background: 'none',
     border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666' },
   modalTitulo: { textAlign: 'center', color: '#762d78', marginTop: 0 },
-modalTotal: { textAlign: 'center', color: '#9701df', fontWeight: 'bold',
-  fontSize: '18px', marginBottom: '4px' },
+  modalTotal: { textAlign: 'center', color: '#9701df', fontWeight: 'bold',
+    fontSize: '18px', marginBottom: '4px' },
   campo: { marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '6px' },
   input: { padding: '10px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px' },
   botonConfirmar: { width: '100%', padding: '12px', backgroundColor: '#9701df', color: 'white',
     border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold',
     fontSize: '15px', marginTop: '8px' },
-    botonDescarga: { display: 'block', width: '100%', padding: '12px', backgroundColor: '#9701df',
-  color: 'white', textAlign: 'center', textDecoration: 'none', borderRadius: '6px',
-  fontWeight: 'bold', marginTop: '8px', boxSizing: 'border-box' },
   mensaje: { color: '#10b981', fontSize: '13px', textAlign: 'center' },
   mensajeError: { color: '#ef4444', fontSize: '13px', textAlign: 'center' },
+  botonDescarga: { display: 'block', width: '100%', padding: '12px', backgroundColor: '#9701df',
+    color: 'white', textAlign: 'center', textDecoration: 'none', borderRadius: '6px',
+    fontWeight: 'bold', marginTop: '8px', boxSizing: 'border-box' },
+  botonCerrarModal: { width: '100%', padding: '10px', backgroundColor: '#6b7280', color: 'white',
+    border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '8px' },
 };
 
 export default Carrito;
